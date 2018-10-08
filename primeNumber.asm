@@ -4,12 +4,11 @@ DATA    ENDS
 
 
 CODE	SEGMENT
-		ASSUME  CS:CODE,DS:DATA,
-                ES:DATA
+	ASSUME  CS:CODE,ES:DATA,DS:DATA
 MAIN	PROC	FAR
 START:	PUSH	DS
-		SUB		AX,AX
-		PUSH	AX
+	SUB	AX,AX
+	PUSH	AX
 
         MOV     AX,DATA ; set up for data segment
         MOV     DS,AX
@@ -22,7 +21,9 @@ OUTER:  INC     CH
         JA      PRINT   ; if outer counter is greater than 100, jump to print result
         MOV     CL,1    ; inner counter, range from 2 to CH/2
 INNER:  INC     CL
-        CMP     CL,CH/2 ; if inner counter is greater than half of outer counter, this number is prime number
+        MOV     BL,CH   ; BL = CH
+        SHR     BL,1    ; BL = CH/2
+        CMP     CL,BL   ; if inner counter is greater than half of outer counter, this number is prime number
         JA      STORE   ; jump to store it
 
         XOR     AX,AX   ; AX = 0
@@ -59,16 +60,16 @@ PRINTER PROC    NEAR
 
         MOV     DL,CH       ; print first number
         MOV     AH,2
-        INT     21
+        INT     21H
         MOV     DL,CL       ; print second number
         MOV     AH,2
-        INT     21
+        INT     21H
         MOV     DL,0DH      ; print \r
         MOV     AH,2
-        INT     21
-        MOV     DL,0CH      ; print \n
+        INT     21H
+        MOV     DL,0AH      ; print \n
         MOV     AH,2
-        INT     21
+        INT     21H
         RET
 PRINTER ENDP
 
