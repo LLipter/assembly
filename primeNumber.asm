@@ -64,10 +64,7 @@ PRINTER PROC    NEAR
         MOV     DL,CL       ; print second number
         MOV     AH,2
         INT     21H
-        MOV     DL,0DH      ; print \r
-        MOV     AH,2
-        INT     21H
-        MOV     DL,0AH      ; print \n
+        MOV     DL,20H      ; print space
         MOV     AH,2
         INT     21H
         RET
