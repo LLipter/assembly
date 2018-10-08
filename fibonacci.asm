@@ -7,11 +7,11 @@ TMP2    DW  ?
 DATA    ENDS
 
 CODE	SEGMENT
-	    ASSUME  CS:CODE,ES:DATA,DS:DATA
+	ASSUME  CS:CODE,ES:DATA,DS:DATA
 MAIN	PROC	FAR
 START:	PUSH	DS
-	    SUB 	AX,AX
-	    PUSH	AX
+	SUB 	AX,AX
+	PUSH	AX
 
         MOV     AX,DATA             ; set up for data segment
         MOV     DS,AX
@@ -96,4 +96,4 @@ PT2:    MOV     AH,2
 PRINTER ENDP
 
 CODE	ENDS
-		END MAIN
+	END MAIN
