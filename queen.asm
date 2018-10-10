@@ -15,10 +15,14 @@ START:	PUSH	DS
         MOV     SI,OFFSET QUEEN
 
 
-        PUSH
+VALID:  POP     AX                  ; location of queen that need validation
+        MOV     CX,AX
+        INC     CX
+                
 
 
-        RET
+STOP:   RET
+
 MAIN	ENDP
 
 PRINTER PROC    NEAR
