@@ -2,7 +2,8 @@ DATA    SEGMENT
 QUEEN   DB  9  DUP(?)                   ; location of queens, declare 1 more byte so that index starts with 1
 ANS     DB  0                           ; number of solutions
 CUR     DB  1                           ; index of current positioning queen
-ISVILID BD  0                           ; whether current queen is valid
+ISVILID DB  0                           ; whether current queen is valid
+QNO     DB  8                           ; number of queens
 DATA    ENDS
 
 CODE	SEGMENT
@@ -15,8 +16,8 @@ START:	PUSH	DS
         MOV     AX,DATA                 ; set up for data segment
         MOV     DS,AX
         MOV     SI,OFFSET QUEEN
-  
 
+        CALL    DFS
 
 STOP:   RET
 MAIN	ENDP
@@ -46,11 +47,37 @@ INVALID:MOV     ISVALID,0
 CHECK   ENDP
 
 
+DFS     PROC    NEAR
+        INC     CUR
+        CMP     CUR,QNO
+        JA      FOUND
+
+
+FOUND:  INC     ANS
+
+
+        RET
+DFS     ENDP
+
 PRINTER PROC    NEAR
-        MOV     DL,0AH                  ; print \n
+        MOV     CX,1
+LOOP2:  MOV     DL,QUEEN[CX]
+        OR      DL,3OH                  ; transform to ASCII format
         MOV     AH,2
         INT     21H
+        MOV     DL,20H                  ; print space
+        MOV     AH,2
+        INT     21H
+        INC     CX
+        CMP     CX,QNO                  ; if CX <= QNO, keep printing
+        JBE     LOOP2     
 
+        MOV     DL,0DH                  ; print \r
+        MOV     AH,2
+        INT     21H
+        MOV     DL,0AH                  ; print \n
+        MOV     AH,2
+        INT     21H 
 
         RET
 PRINTER ENDP
