@@ -49,13 +49,30 @@ CHECK   ENDP
 
 DFS     PROC    NEAR
         INC     CUR
-        CMP     CUR,QNO
+        CMP     CUR,QNO                 ; if all queens have been placed, solution found
         JA      FOUND
+
+        MOV     CX,QNO
+LOOP3:  MOV     QUEEN[CUR],CX
+        PUSH    CX                      ; protect CX
+        CALL    CHECK
+        POP     CX                      ; revover CX
+        CMP     ISVALID,1               ; if current queen is valid, then go deeper
+        JE      DEEPER                  
+        JMP     CONT                    ; otherwise, place current queen to another position
+
+DEEPER: PUSH    CX                      ; protect CX
+        CALL    DFS
+        POP     CX                      ; revover CX
+
+CONT:   LOOP    LOOP3
+
+        JMP     STOP
 
 
 FOUND:  INC     ANS
-
-
+        CALL    PRINTER
+STOP:   DEC     CUR
         RET
 DFS     ENDP
 
