@@ -2,7 +2,7 @@ DATA    SEGMENT
 QUEEN   DB  9  DUP(?)                   ; location of queens, declare 1 more byte so that index starts with 1
 ANS     DB  0                           ; number of solutions
 CUR     DW  0                           ; index of current positioning queen
-ISVILID DB  0                           ; whether current queen is valid
+ISVALID DB  0                           ; whether current queen is valid
 QNO     DW  8                           ; number of queens
 DATA    ENDS
 
@@ -47,8 +47,10 @@ CHECK   PROC    NEAR
         DEC     CX
         CMP     CX,0                    ; first queen is always valid
         JE      VALID
-LOOP1:  MOV     AL,QUEEN[CX]
-        MOV     BL,QUEEN[CUR]
+LOOP1:  MOV     SI,CX
+        MOV     AL,QUEEN[SI]
+        MOV     SI,CUR
+        MOV     BL,QUEEN[SI]
         SUB     AL,BL                   ; duplicate location is invalid
         JE      INVALID
         JNC     CROSS                   ; AX is greater than BX, difference is positive, jump to check cross lines
@@ -72,7 +74,8 @@ DFS     PROC    NEAR
         CMP     CUR,CX                  ; if all queens have been placed, solution found
         JA      FOUND
 
-LOOP3:  MOV     QUEEN[CUR],CL
+LOOP3:  MOV     SI,CUR
+        MOV     QUEEN[SI],CL
         PUSH    CX                      ; protect CX
         CALL    CHECK
         POP     CX                      ; revover CX
@@ -94,8 +97,9 @@ DFS     ENDP
 
 PRINTER PROC    NEAR
         MOV     CX,1
-LOOP2:  MOV     DL,QUEEN[CX]
-        OR      DL,3OH                  ; transform to ASCII format
+LOOP2:  MOV     SI,CX
+        MOV     DL,QUEEN[SI]
+        OR      DL,30H                  ; transform to ASCII
         MOV     AH,2
         INT     21H
         MOV     DL,20H                  ; print space
