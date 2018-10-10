@@ -1,9 +1,9 @@
 DATA    SEGMENT
 QUEEN   DB  9  DUP(?)                   ; location of queens, declare 1 more byte so that index starts with 1
 ANS     DB  0                           ; number of solutions
-CUR     DB  1                           ; index of current positioning queen
+CUR     DW  0                           ; index of current positioning queen
 ISVILID DB  0                           ; whether current queen is valid
-QNO     DB  8                           ; number of queens
+QNO     DW  8                           ; number of queens
 DATA    ENDS
 
 CODE	SEGMENT
@@ -15,11 +15,31 @@ START:	PUSH	DS
 
         MOV     AX,DATA                 ; set up for data segment
         MOV     DS,AX
-        MOV     SI,OFFSET QUEEN
 
         CALL    DFS
 
-STOP:   RET
+        MOV     AX,0
+        MOV     AL,ANS                  ; AX = ANS
+        MOV     BL,10
+        DIV     BL                      ; AH = AX % 10, AL = AX / 10
+        XCHG    AH,AL                   ; AL = AX % 10, AH = AX / 10
+        OR      AX,3030H                ; transform to ASCII representation
+        MOV     CX,AX
+
+        MOV     DL,CH                   ; print first number
+        MOV     AH,2
+        INT     21H
+        MOV     DL,CL                   ; print second number
+        MOV     AH,2
+        INT     21H
+        MOV     DL,0DH                  ; print \r
+        MOV     AH,2
+        INT     21H
+        MOV     DL,0AH                  ; print \n
+        MOV     AH,2
+        INT     21H 
+
+        RET
 MAIN	ENDP
 
 CHECK   PROC    NEAR
@@ -27,19 +47,18 @@ CHECK   PROC    NEAR
         DEC     CX
         CMP     CX,0                    ; first queen is always valid
         JE      VALID
-LOOP1:  MOV     AX,QUEEN[CX]
-        MOV     BX,QUEEN[CUR]
-        SUB     AX,BX                   ; duplicate location is invalid
+LOOP1:  MOV     AL,QUEEN[CX]
+        MOV     BL,QUEEN[CUR]
+        SUB     AL,BL                   ; duplicate location is invalid
         JE      INVALID
-        JNC     CROSS                   ; AX is greater than BX, difference is positive, jump to CROSS
-        NOT     AX                      ; otherwise, difference is negative
-        INC     AX                      ; AX = -AX, now the difference is positive
+        JNC     CROSS                   ; AX is greater than BX, difference is positive, jump to check cross lines
+        NOT     AL                      ; otherwise, difference is negative
+        INC     AL                      ; AX = -AX, now the difference is positive
 CROSS:  MOV     BX,CUR
         SUB     BX,CX                   ; BX is the difference of their index
-        CMP     AX,BX
+        CMP     AL,BL
         JE      INVALID
         LOOP    LOOP1
-
 VALID:  MOV     ISVALID,1
         RET
 INVALID:MOV     ISVALID,0
@@ -49,32 +68,29 @@ CHECK   ENDP
 
 DFS     PROC    NEAR
         INC     CUR
-        CMP     CUR,QNO                 ; if all queens have been placed, solution found
+        MOV     CX,QNO
+        CMP     CUR,CX                  ; if all queens have been placed, solution found
         JA      FOUND
 
-        MOV     CX,QNO
-LOOP3:  MOV     QUEEN[CUR],CX
+LOOP3:  MOV     QUEEN[CUR],CL
         PUSH    CX                      ; protect CX
         CALL    CHECK
         POP     CX                      ; revover CX
         CMP     ISVALID,1               ; if current queen is valid, then go deeper
         JE      DEEPER                  
         JMP     CONT                    ; otherwise, place current queen to another position
-
 DEEPER: PUSH    CX                      ; protect CX
         CALL    DFS
         POP     CX                      ; revover CX
-
 CONT:   LOOP    LOOP3
-
         JMP     STOP
-
 
 FOUND:  INC     ANS
         CALL    PRINTER
 STOP:   DEC     CUR
         RET
 DFS     ENDP
+
 
 PRINTER PROC    NEAR
         MOV     CX,1
@@ -95,7 +111,6 @@ LOOP2:  MOV     DL,QUEEN[CX]
         MOV     DL,0AH                  ; print \n
         MOV     AH,2
         INT     21H 
-
         RET
 PRINTER ENDP
 
