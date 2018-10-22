@@ -46,5 +46,76 @@ However, some symbolic names are references to a memory label outside the file b
 
 The algorithm for linking functions together is very similar to that of the assembler. The same forward reference problem exists. Again, the simplest solution is to use a two-pass linker program.
 
- 
- 
+
+# Call functions
+
+## Passing Arguments
+
+With x86-64, up to six integral arguments can be passed via registers. The registers are used in a specific order, with the name used for a register depending on the size of data type being passed.
+
+<center>
+<table>
+	<tr>
+		<td rowspan=2>Operand size (bits)</td>
+		<td colspan=6 align='center'>Argument number</td>
+	</tr>
+	<tr align='center'>
+		<td>1</td>
+		<td>2</td>
+		<td>3</td>
+		<td>4</td>
+		<td>5</td>
+		<td>6</td>
+	</tr>
+	<tr>
+		<td align='center'>64</td>
+		<td>%rdi</td>
+		<td>%rsi</td>
+		<td>%rdx</td>
+		<td>%rcx</td>
+		<td>%r8</td>
+		<td>%r9</td>
+	</tr>
+	<tr>
+		<td align='center'>32</td>
+		<td>%edi</td>
+		<td>%esi</td>
+		<td>%edx</td>
+		<td>%ecx</td>
+		<td>%r8d</td>
+		<td>%r9d</td>
+	</tr>
+	<tr>
+		<td align='center'>16</td>
+		<td>%di</td>
+		<td>%si</td>
+		<td>%dx</td>
+		<td>%cx</td>
+		<td>%r8w</td>
+		<td>%r9w</td>
+	</tr>
+	<tr>
+		<td align='center'>8</td>
+		<td>%dil</td>
+		<td>%sil</td>
+		<td>%dl</td>
+		<td>%cl</td>
+		<td>%r8b</td>
+		<td>%r9b</td>
+	</tr>
+</table>
+</center>
+
+With a function has more than six integral arguments, the others ones are passed on the stack. Notice that arguments have to be pushed into the stack in reverse order, so that the 7th argument is on the top of the stack.
+
+
+# How to Call functions
+
+The assembly language instruction used to call a function is
+
+`call	functionName`
+
+where `functionName` is the name of the function being called. The call instruction does two things:
+
+ 1. The address in the rip register is pushed onto the call stack. Recall that the rip register is incremented immediately after the instruction is fetched. Thus, when the call instruction is executed, the value that gets pushed onto the stack is the address of the instruction immediately following the call instruction. That is, the return address gets pushed onto the stack in this first step.
+ 2. The address that functionName resolves to is placed in the rip register. This is the address of the function that is being called, so the next instruction to be fetched is the first instruction in the called function.
