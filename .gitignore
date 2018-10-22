@@ -1,3 +1,5 @@
 *.EXE
 *.MAP
 *.OBJ
+*.o
+*.out
