@@ -1,4 +1,4 @@
-doNothing: doNothing.o
+doNothing.out: doNothing.o
 	gcc doNothing.o -o doNothing.out
 
 doNothing.o: doNothing.s
