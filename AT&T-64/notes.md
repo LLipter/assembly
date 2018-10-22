@@ -27,3 +27,24 @@ GNU/Linux divides memory into different segments for specific purposes when a pr
  - data is where global variables and static local variables are stored. It is read-write memory and remains in place for the duration of the program.
  - stack is where automatic local variables and the data that links functions are stored. It is read-write memory that is allocated and deallocated dynamically as the program executes.
  - heap is the pool of memory available when a C program calls the malloc function (or C++ calls new). It is read-write memory that is allocated and deallocated by the program.
+
+# Assembler
+ 
+An assembler must perform the following tasks:
+
+ - Translate assembly language mnemonics into machine language.
+ - Translate symbolic names for addresses into numeric addresses.
+
+The simplest solution is to use a two-pass assembler:
+
+ 1. The first pass builds a symbol table, which provides an address for each memory label.
+ 2. The second pass performs the actual translation into machine language, consulting the symbol table for numeric values of the symbols.
+
+However, some symbolic names are references to a memory label outside the file being assembled. Thus, the assembler has no way to determine the address of write for the symbol table during the first pass. The only thing the assembler can do during the second pass is to leave enough memory space for the address of write when it assembles this instruction. The actual address will have to be filled in later in order to create the entire program. Filling in these references to external memory locations is the job of the linker program.
+
+# Linker
+
+The algorithm for linking functions together is very similar to that of the assembler. The same forward reference problem exists. Again, the simplest solution is to use a two-pass linker program.
+
+ 
+ 
