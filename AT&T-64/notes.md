@@ -108,6 +108,10 @@ With x86-64, up to six integral arguments can be passed via registers. The regis
 
 With a function has more than six integral arguments, the others ones are passed on the stack. Notice that arguments have to be pushed into the stack in reverse order, so that the 7th argument is on the top of the stack.
 
+## Return Value
+
+Integral return value will be stored in `%rax` register.
+
 
 ## How to Call functions
 
