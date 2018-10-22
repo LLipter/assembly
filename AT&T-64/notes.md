@@ -109,7 +109,7 @@ With x86-64, up to six integral arguments can be passed via registers. The regis
 With a function has more than six integral arguments, the others ones are passed on the stack. Notice that arguments have to be pushed into the stack in reverse order, so that the 7th argument is on the top of the stack.
 
 
-# How to Call functions
+## How to Call functions
 
 The assembly language instruction used to call a function is
 
@@ -119,3 +119,64 @@ where `functionName` is the name of the function being called. The call instruct
 
  1. The address in the rip register is pushed onto the call stack. Recall that the rip register is incremented immediately after the instruction is fetched. Thus, when the call instruction is executed, the value that gets pushed onto the stack is the address of the instruction immediately following the call instruction. That is, the return address gets pushed onto the stack in this first step.
  2. The address that functionName resolves to is placed in the rip register. This is the address of the function that is being called, so the next instruction to be fetched is the first instruction in the called function.
+
+## Preserve Register
+
+By convention, the values in registers `rbx`, `rbp`, `rsp`, and `r12–r15` must be preserved by the called function, which means after called function returns their values should as same as before calling this function.
+
+~~~asm
+foo: 
+          pushq   %rbp        # save caller’s frame pointer 
+          movq    %rsp, %rbp  # establish our frame pointer 
+   
+          pushq   %rbx        # "must-save" registers 
+          pushq   %r12 
+          pushq   %r13 
+          pushq   %r14 
+          pushq   %r15 
+   
+          movb    $0x12, %bl  # "use" the registers 
+          movw    $0xabcd, %r12w 
+          movl    $0x1234abcd, %r13d 
+          movq    $0xdcba, %r14 
+          movq    $0x9876, %r15 
+   
+          popq   %r15         # restore registers 
+          popq   %r14 
+          popq   %r13 
+          popq   %r12 
+          popq   %rbx 
+   
+          movl   $0, %eax     # return 0 
+          popq   %rbp         # restore caller’s frame pointer 
+          ret                 # back to caller 
+
+~~~
+
+
+## Memory Layout
+
+Memory layout is showed as follows. In this figure, upper cells have higher memory addresses. The whole stack grows from high addresses to low addresses.
+
+<center>
+<table>
+	<tr>
+		<td>Nth Argument</td>
+	</tr>
+	<tr>
+		<td>...</td>
+	</tr>
+	<tr>
+		<td>7th Argument</td>
+	</tr>
+	<tr>
+		<td>Return Address</td>
+	</tr>	
+	<tr>
+		<td height=100>Local Variables</td>
+	</tr>
+	<tr>
+		<td height=100>Other Space in Stack</td>
+	</tr>
+</table>
+</center>
