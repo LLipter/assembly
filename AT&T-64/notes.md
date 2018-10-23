@@ -206,3 +206,29 @@ Memory layout is showed as follows. In this figure, upper cells have higher memo
 
 1. Each variable should be aligned on an address that is a multiple of its size.
 2. The address in the stack pointer `rsp` should be a multiple of 16 immediately before another function is called.
+
+## Summary
+It is essential that you follow the register usage and argument passing disciplines precisely. Any deviation can cause errors that are very difficult to debug.
+
+ - In the calling function:
+ 	- Assume that the values in the rax, rcx, rdx, rsi, rdi and r8 – r11 registers will be changed by the called function.
+ 	- The ﬁrst six arguments are passed in the rdi, rsi, rdx, rcx, r8, and r9 registers in left-to-right order.
+ 	- Arguments beyond six are stored on the stack as though they had been pushed onto the stack in right-to-left order.
+ 	- Use the call instruction to invoke the function you wish to call.
+ - Upon entering the called function:
+ 	- Save the caller’s frame pointer by pushing rbp onto the stack.
+ 	- Establish a new frame pointer at the current top of stack by copying rsp to rbp.
+ 	- Allocate space on the stack for all the local variables, plus any required register save space, by subtracting the number of bytes required from rsp; this value must be a multiple of sixteen.
+ 	- If a called function changes any of the values in the rbx, rbp, rsp, or r12 – r15 registers, they must be saved in the register save area, then restored before returning to the calling function.
+ 	- If the function calls another function, save the arguments passed in registers on the stack.
+ - Within the called function:
+ 	- rsp is pointing to the current bottom of the stack that is accessible to this function. Observe the usual stack discipline. In particular, DO NOT use the stack pointer to access arguments or local variables.
+ 	- Arguments passed in registers to the function and saved on the stack are accessed by negative oﬀsets from the frame pointer, rbp.
+ 	- Arguments passed on the stack to the function are accessed by positive oﬀsets from the frame pointer, rbp.
+ 	- Local variables are accessed by negative oﬀsets from the frame pointer, rbp.
+ - When leaving the called function:
+ 	- Place the return value, if any, in eax.
+ 	- Restore the values in the rbx, rbp, rsp, and r12 – r15 registers from the register save area in the stack frame.
+ 	- Delete the local variable space and register save area by copying rbp to rsp.
+ 	- Restore the caller’s frame pointer by popping rbp oﬀ the stack save area.
+ 	- Return to calling function with ret.
