@@ -126,7 +126,9 @@ where `functionName` is the name of the function being called. The call instruct
 
 ## Preserve Register
 
-By convention, the values in registers `rbx`, `rbp`, `rsp`, and `r12–r15` must be preserved by the called function, which means after called function returns their values should as same as before calling this function.
+By convention, the values in registers `rbx`, `rbp`, `rsp`, and `r12–r15` must be preserved by the callee function, which means after called function returns their values should as same as before calling this function.
+
+Also, `r10` and `r11` should be protected by caller function by convention.
 
 ~~~asm
 foo: 
@@ -143,7 +145,13 @@ foo:
           movw    $0xabcd, %r12w 
           movl    $0x1234abcd, %r13d 
           movq    $0xdcba, %r14 
-          movq    $0x9876, %r15 
+          movq    $0x9876, %r15
+          
+          pushq	%r10			# caller protect registers
+          pushq	%r11			
+          call	bar
+          popq	%r11			# caller restore registers
+          popq	%r10
    
           popq   %r15         # restore registers 
           popq   %r14 
@@ -156,6 +164,9 @@ foo:
           ret                 # back to caller 
 
 ~~~
+
+
+
 
 
 ## Memory Layout
@@ -177,13 +188,16 @@ Memory layout is showed as follows. In this figure, upper cells have higher memo
 		<td align='center'>Return Address</td>
 	</tr>	
 	<tr>
-		<td align='center'>%rbp</td>
+		<td align='center'>Old %rbp</td>
 	</tr>	
 	<tr>
 		<td height=100 align='center'>Local Variables</td>
 	</tr>
 	<tr>
-		<td height=100 align='center'>Other Space in Stack</td>
+		<td height=100 align='center'>Preserved Register</td>
+	</tr>
+	<tr>
+		<td height=100 align='center'>Arguments for Next Frame</td>
 	</tr>
 </table>
 </center>
