@@ -165,22 +165,25 @@ Memory layout is showed as follows. In this figure, upper cells have higher memo
 <center>
 <table>
 	<tr>
-		<td>Nth Argument</td>
+		<td align='center'>Nth Argument</td>
 	</tr>
 	<tr>
-		<td>...</td>
+		<td align='center'>...</td>
 	</tr>
 	<tr>
-		<td>7th Argument</td>
+		<td align='center'>7th Argument</td>
 	</tr>
 	<tr>
-		<td>Return Address</td>
+		<td align='center'>Return Address</td>
 	</tr>	
 	<tr>
-		<td height=100>Local Variables</td>
+		<td align='center'>%rbp</td>
+	</tr>	
+	<tr>
+		<td height=100 align='center'>Local Variables</td>
 	</tr>
 	<tr>
-		<td height=100>Other Space in Stack</td>
+		<td height=100 align='center'>Other Space in Stack</td>
 	</tr>
 </table>
 </center>
