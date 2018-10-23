@@ -187,3 +187,8 @@ Memory layout is showed as follows. In this figure, upper cells have higher memo
 	</tr>
 </table>
 </center>
+
+## Allocating Space for Local Variable
+
+1. Each variable should be aligned on an address that is a multiple of its size.
+2. The address in the stack pointer `rsp` should be a multiple of 16 immediately before another function is called.
